@@ -1,7 +1,8 @@
 import cv2
 
-if __name__ == '__main__':
-    cap = cv2.VideoCapture(0)
+def capture(cap=None):
+
+    cap = cap or cv2.VideoCapture(0)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
     if cap.isOpened():
@@ -40,3 +41,7 @@ if __name__ == '__main__':
 
     else:
         print('[ERR]: Unable to open camera')
+
+if __name__ == '__main__':
+    cap = build_pipeline()
+    capture(cap)

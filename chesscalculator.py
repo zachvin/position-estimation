@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import json
+import os
 
 class Calculator():
     def __init__(self, shape=(9,6), filename='params'):
@@ -12,7 +12,7 @@ class Calculator():
             filename : optional, 'params'
                 Name of intrinsic parameter file to be saved
         """
-        self.SQUARE_SIZE = 21.8 # in mm
+        self.square_size = 21.8 # in mm
 
         self.filename = filename
         self.shape = shape
@@ -49,7 +49,7 @@ class Calculator():
 
         return [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in images]
     
-    def calculate(self, images):
+    def calculate(self, images, show=False):
         """
         Calculate camera's intrinsic parameters from list of images.
         Params:
@@ -62,7 +62,7 @@ class Calculator():
 
         # prepare object points
         objp = np.zeros((self.shape[0] * self.shape[1], 3), np.float32)
-        objp[:,:2] = np.mgrid[0:self.shape[1],0:self.shape[0]].T.reshape(-1,2) * self.SQUARE_SIZE
+        objp[:,:2] = np.mgrid[0:self.shape[1],0:self.shape[0]].T.reshape(-1,2)
 
         # arrays to store object points and image points
         objpoints = []
@@ -86,7 +86,7 @@ class Calculator():
             else:
                 print(f'[WARN] no pattern found in image {i}')
 
-            cv2.imshow(f'Image {i}', img)
+            if show: cv2.imshow(f'Image {i}', img)
 
             k = cv2.waitKey(500)
             cv2.destroyAllWindows()
@@ -108,8 +108,16 @@ class Calculator():
 
 
 if __name__ == '__main__':
-    images = [cv2.imread(f'imgs/calib-{i}.jpg') for i in range(28)]
 
+    # find number of files in image directory
+    n = 0
+    for file in os.listdir('/imgs'):
+        if os.path.isfile(file): n += 1
+
+    # reads in all images
+    images = [cv2.imread(f'imgs/calib-{i:02}.jpg') for i in range(n)]
+
+    # uses images to calibrate camera and save parameters
     calc = Calculator()
     calc.calculate(images)
-    calc.save()
+    calc.save(filename='xps-params')

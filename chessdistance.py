@@ -12,7 +12,7 @@ def load_params(fname='params'):
             Intrinsic camera properties
     """
 
-    with np.load(f'{fname}.npz') as f:
+    with np.load(f'params/{fname}.npz') as f:
         return f['mtx'], f['dist']
     
 def calc_distance(frame):
@@ -39,8 +39,10 @@ def calc_distance(frame):
 
 
 if __name__ == '__main__':
-
+    import sys
     mtx, dist = load_params()
+    print(mtx, dist)
+    sys.exit()
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     objp = np.zeros((9*6,3), np.float32)
